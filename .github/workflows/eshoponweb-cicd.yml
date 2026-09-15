@@ -76,3 +76,30 @@ jobs:
         with:
           name: .net-app
           path: .net-app
+
+      # Download the infrastructure template required by the deploy job
+      - name: Download Bicep artifact from build job
+        uses: actions/download-artifact@v6
+        with:
+          name: bicep-template
+          path: infra
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Azure infrastructure
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az deployment group create \
+              --resource-group ${{ env.RESOURCE-GROUP }} \
+              --template-file ${{ env.TEMPLATE-FILE }} \
+              --parameters webAppName=${{ env.WEBAPP-NAME }}
+
+      - name: Deploy web app
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEBAPP-NAME }}
+          package: .net-app/app.zip
