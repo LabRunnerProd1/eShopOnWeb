@@ -1,8 +1,12 @@
 name: eShopOnWeb Build and Test
 
 
+
+
 #Triggers (uncomment line below to use it)
-#on: [push, workflow_dispatch]
+on: [push, workflow_dispatch]
+
+
 
 
 #Environment variables https://docs.github.com/en/actions/learn-github-actions/environment-variables
@@ -12,6 +16,8 @@ env:
   TEMPLATE-FILE: infra/webapp.bicep
   SUBSCRIPTION-ID: 766c3f5b-fa5c-4a9c-8265-5f5247dcb913
   WEBAPP-NAME: az2006app23233
+
+
 
 
 jobs:
@@ -45,12 +51,16 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/app.zip
 
 
+
+
       # upload the bicep template as artifacts for next job
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v5
         with:
           name: bicep-template
           path: ${{ env.TEMPLATE-FILE }}
+
+
 
 
   # Use Bicep to deploy infrastructure + Publish webapp
@@ -66,9 +76,3 @@ jobs:
         with:
           name: .net-app
           path: .net-app
-
-
-      #Download the bicep templates from previous job
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v6
-        with:
